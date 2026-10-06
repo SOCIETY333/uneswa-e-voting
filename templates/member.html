@@ -1,0 +1,12 @@
+{% extends "base.html" %}{% from "_macros.html" import banner, card %}
+{% block hr %}<span class="chip">{{ user }}</span><a class="b g s" href="/logout">Sign out</a>{% endblock %}
+{% block nav %}<nav>{% for k, l in [('dashboard','Live dashboard'),('nominate','Nominate'),('vote','Vote'),('calendar','Calendar')] %}<a class="{{ 'on' if tab == k }}" href="/{{ k }}">{{ l }}</a>{% endfor %}</nav>{% endblock %}
+{% block body %}{{ banner() }}
+{% if tab == 'dashboard' %}<h2>Live dashboard</h2><div id="live"></div><script src="{{ url_for('static', filename='live.js') }}"></script>
+{% elif tab == 'nominate' %}{% if y.stage != 'nomination' %}<div class="card">Nominations are {{ 'not open yet' if STG.index(y.stage) < 2 else 'closed' }}.</div>{% else %}
+<datalist id="ml">{% for m in members %}<option value="{{ m.name }} ({{ m.sid }})">{% endfor %}</datalist>
+<p class="mut">Nominate one member per category. The members with the most nominations become the candidates.</p><div class="grid">
+{% for c in cats %}<div class="card"><h3>{{ c.name }}</h3>{% if c.id in done %}<p class="ok">✔ Nomination submitted</p>{% else %}<form method="post">{{ csrf() }}<input type="hidden" name="cat" value="{{ c.id }}"><input name="nominee" list="ml" placeholder="Start typing a member's name" required autocomplete="off"><button class="b">Nominate</button></form>{% endif %}</div>{% endfor %}</div>{% endif %}
+{% elif tab == 'vote' %}{% if y.stage != 'voting' %}<div class="card">{{ 'Voting is closed. See the results on the dashboard.' if y.stage == 'closed' else 'Voting is not open yet.' }}</div>{% else %}<div class="grid">
+{% for v in vcats %}<div class="card"><h3>{{ v.c.name }}</h3>{% if v.c.id in done %}<p class="ok">✔ Your vote has been recorded</p>{% else %}{% for m in v.cands %}<div class="cand">{{ card(m) }}<form method="post" onsubmit="return confirm('Cast your vote for {{ m.name|e }}? This is final.')">{{ csrf() }}<input type="hidden" name="cat" value="{{ v.c.id }}"><input type="hidden" name="cand" value="{{ m.sid }}"><button class="b t s" style="margin-top:8px">Vote</button></form></div>{% else %}<p class="mut">No candidates.</p>{% endfor %}{% endif %}</div>{% endfor %}</div>{% endif %}
+{% else %}{% set is_admin = false %}{% include "_cal.html" %}{% endif %}{% endblock %}

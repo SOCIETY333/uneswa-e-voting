@@ -1,0 +1,2 @@
+{% macro banner() %}{% if y %}<div class="banner">Academic year <b>{{ y.name }}</b> · Current stage: <b>{{ SL[y.stage] }}</b></div>{% endif %}{% endmacro %}
+{% macro card(m) %}<div><b>{{ m.name }}</b><div class="mut">{{ m.level }} · {{ m.prog }}{% if m.campus %} · {{ m.campus }}{% endif %}{% if m.skill %} · {{ m.skill }}{% endif %}</div><div class="chips">{% for i in m.interests.split(',') if i.strip() %}{% if loop.index <= 6 %}<span>{{ i.strip() }}</span>{% endif %}{% endfor %}</div></div>{% endmacro %}

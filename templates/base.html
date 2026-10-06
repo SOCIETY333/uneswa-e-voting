@@ -1,0 +1,5 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="robots" content="noindex"><title>UNESWA ICT Society E-Voting</title><link rel="icon" href="{{ url_for('static', filename='logo.jpg') }}"><link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"></head><body>
+<header><img src="{{ url_for('static', filename='logo.jpg') }}" alt=""><div><h1>UNESWA ICT Society<small>E-Voting System</small></h1></div><div class="sp"></div>{% block hr %}{% endblock %}</header>
+{% block nav %}{% endblock %}
+<main>{% for c, m in get_flashed_messages(with_categories=true) %}<p class="{{ 'ok' if c == 'ok' else 'err' }}">{{ m }}</p>{% endfor %}
+{% if y and tab != 'x' %}{% endif %}{% block body %}{% endblock %}</main></body></html>

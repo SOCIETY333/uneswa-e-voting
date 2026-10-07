@@ -304,9 +304,22 @@ def act(a):
     elif a == "event_del":
         with d: d.execute("delete from events where id=?", (f.get("id", type=int),))
         tab = "calendar"
+    elif a == "event_edit":
+        if f.get("title", "").strip() and f.get("date"):
+            with d: d.execute("update events set title=?,date=?,time=?,place=?,descr=? where id=?",
+                              (f["title"].strip(), f["date"], f.get("time", ""), f.get("place", ""), f.get("descr", ""), f.get("id", type=int)))
+            flash("Event updated.", "ok")
+        tab = "calendar"
     elif y:
         n = y["name"]
-        if a == "stage" and f.get("stage") in STG:
+        if a == "year_del":
+            with d:
+                for t in ("members", "accounts", "cats", "noms", "nominated", "cands", "votes", "voted"):
+                    d.execute("delete from %s where year=?" % t, (n,))
+                d.execute("delete from years where name=?", (n,))
+                d.execute("update years set active=1 where name=(select name from years order by name desc limit 1)")
+            flash("Removed %s: its member list, accounts, nominations and votes." % n, "ok")
+        elif a == "stage" and f.get("stage") in STG:
             with d:
                 if f["stage"] == "voting" and not d.execute("select 1 from votes where year=?", (n,)).fetchone():
                     d.execute("delete from cands where year=?", (n,))
